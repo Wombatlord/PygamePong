@@ -1,17 +1,17 @@
 import pygame
 import time
 
+pygame.init()
+
 # Variables
 HEIGHT = 600
 WIDTH = 1200
 BORDER = 20
-bgColour = pygame.Color("black")
 fgColour = pygame.Color("red")
-ballColour = pygame.Color("white")
+ballColour = pygame.Color("black")
 paddleColour = pygame.Color("blue")
 velocity = 300
-
-pygame.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
 def current_time():
@@ -22,10 +22,16 @@ def timeSince(when):
     return current_time() - when
 
 
-def renderBackGround():
-    global screen, bgColour, fgColour, WIDTH, BORDER, HEIGHT
+def renderBackground():
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill((0, 175, 0))
+    screen.blit(background, (0, 0))
 
-    pygame.draw.rect(screen, bgColour, pygame.Rect((0, 0), (WIDTH, HEIGHT)))
+
+def renderWalls():
+    global screen, fgColour, WIDTH, BORDER, HEIGHT
+
     pygame.draw.rect(screen, fgColour, pygame.Rect((0, 0), (WIDTH, BORDER)))
     pygame.draw.rect(screen, fgColour, pygame.Rect((0, 0), (BORDER, HEIGHT)))
     pygame.draw.rect(screen, fgColour, pygame.Rect((0, HEIGHT - BORDER), (WIDTH, BORDER)))
@@ -47,23 +53,22 @@ class Paddle:
         pygame.draw.rect(screen, paddleColour, pygame.Rect((self.x, self.y), (Paddle.WIDTH, Paddle.HEIGHT)))
 
     def update(self):
-        upperBound = Paddle.HEIGHT//2 + BORDER
-        lowerBound = HEIGHT - Paddle.HEIGHT//2 - BORDER
+        upperBound = Paddle.HEIGHT // 2 + BORDER
+        lowerBound = HEIGHT - Paddle.HEIGHT // 2 - BORDER
         outOfBoundsAbove = pygame.mouse.get_pos()[1] < upperBound
         outOfBoundsBelow = pygame.mouse.get_pos()[1] > lowerBound
 
         if not outOfBoundsAbove and not outOfBoundsBelow:
-            self.y = pygame.mouse.get_pos()[1] - Paddle.HEIGHT//2
+            self.y = pygame.mouse.get_pos()[1] - Paddle.HEIGHT // 2
 
         elif outOfBoundsAbove:
-            self.y = upperBound - Paddle.HEIGHT//2
+            self.y = upperBound - Paddle.HEIGHT // 2
 
         elif outOfBoundsBelow:
-            self.y = lowerBound - Paddle.HEIGHT//2
+            self.y = lowerBound - Paddle.HEIGHT // 2
 
         else:
             raise ValueError('ya fucked it')
-
 
 
 class Ball:
@@ -116,17 +121,18 @@ class Ball:
 
 paddlePlay = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT // 2 - Paddle.HEIGHT // 2)
 ballPlay = Ball(WIDTH - Ball.RADIUS, HEIGHT // 2, - velocity, 150)
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 while True:
     e = pygame.event.poll()
     if e.type == pygame.QUIT:
         break
 
+
     paddlePlay.show()
     ballPlay.show()
     pygame.display.flip()
-    renderBackGround()
+    renderBackground()
+    renderWalls()
     ballPlay.update(paddlePlay)
     paddlePlay.update()
 
