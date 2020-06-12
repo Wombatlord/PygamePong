@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 
 pygame.init()
 
@@ -105,11 +106,12 @@ class Ball:
         horizontalOutOfBounds = newX < BORDER + Ball.RADIUS
 
         if horizontalOutOfBounds:
-            self.vx = -self.vx
+            self.vx = -self.vx + random.randint(25,100)
             newX = self.x + timeSinceLastUpdate * self.vx
 
         if hasCollided:
             self.vx = -abs(self.vx)
+            self.vy = -abs(self.vy) + random.randint(200, 350)
 
         if newY < BORDER + Ball.RADIUS or newY > HEIGHT - BORDER - Ball.RADIUS:
             self.vy = -self.vy
