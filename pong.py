@@ -9,7 +9,7 @@ bgColour = pygame.Color("black")
 fgColour = pygame.Color("red")
 ballColour = pygame.Color("white")
 paddleColour = pygame.Color("blue")
-velocity = 200
+velocity = 300
 
 pygame.init()
 
@@ -99,9 +99,12 @@ class Ball:
         hasCollided = self.getHitBox().colliderect(paddle.getHitBox())
         horizontalOutOfBounds = newX < BORDER + Ball.RADIUS
 
-        if horizontalOutOfBounds or hasCollided:
+        if horizontalOutOfBounds:
             self.vx = -self.vx
             newX = self.x + timeSinceLastUpdate * self.vx
+
+        if hasCollided:
+            self.vx = -abs(self.vx)
 
         if newY < BORDER + Ball.RADIUS or newY > HEIGHT - BORDER - Ball.RADIUS:
             self.vy = -self.vy
@@ -112,7 +115,7 @@ class Ball:
 
 
 paddlePlay = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT // 2 - Paddle.HEIGHT // 2)
-ballPlay = Ball(WIDTH - Ball.RADIUS, HEIGHT // 2, - velocity, 50)
+ballPlay = Ball(WIDTH - Ball.RADIUS, HEIGHT // 2, - velocity, 150)
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 while True:
