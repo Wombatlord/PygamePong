@@ -3,6 +3,8 @@ import time
 import random
 
 pygame.init()
+pygame.display.set_caption("PONGO!")
+pygame.mouse.set_visible(0)
 
 # Screen Variables
 HEIGHT = 600
@@ -62,6 +64,16 @@ def renderScore():
     screen.blit(score, textPos)
 
 
+def renderGameOver():
+    global screen, scoreBoard, scoreBoardPos, scoreBoardSize
+    message = 'You Suck!'
+    font = pygame.font.Font(None, 36)
+    text = font.render(message, 1, (10, 10, 10))
+    textPos = text.get_rect(centerx=scoreBoardPos[0] + scoreBoardSize[0] // 2,
+                            centery=scoreBoardPos[1] + scoreBoardSize[1] // 2 + 25)
+    screen.blit(text, textPos)
+
+
 class Paddle:
     WIDTH = 10
     HEIGHT = 150
@@ -113,9 +125,10 @@ class Ball:
         global screen
         pygame.draw.circle(screen, ballColour, (int(self.x), int(self.y)), Ball.RADIUS)
 
-    def destroy(self):
-        global ballPlay
-        ballPlay = Ball(WIDTH - Ball.RADIUS, HEIGHT // 2, 0, 0)
+    @staticmethod
+    def destroy():
+        global balls
+        balls.remove(ballPlay)
 
     def update(self, paddle: Paddle):
         global scoreValue, WIDTH, HEIGHT, velocity
@@ -136,7 +149,7 @@ class Ball:
         offScreen = newX > WIDTH
 
         if offScreen:
-            Ball.destroy(self)
+            Ball.destroy()
 
         if horizontalOutOfBounds:
             scoreValue += 1
@@ -156,22 +169,39 @@ class Ball:
         self.y = newY
 
 
+# Instantiate Game Objects
 paddlePlay = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT // 2 - Paddle.HEIGHT // 2)
-ballPlay = Ball(WIDTH - Ball.RADIUS, HEIGHT // 2, - velocity, 150)
+ballPlay = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT // 2, - velocity, 150)
+balls = [ballPlay]
 
-while True:
+# Game Loop Flags
+gameOn = True
+gameOver = False
+
+while gameOn:
     e = pygame.event.poll()
     if e.type == pygame.QUIT:
-        break
+        pygame.quit()
 
     renderBackground()
     renderScoreBoard()
     renderScore()
     renderWalls()
     paddlePlay.show()
-    ballPlay.show()
+
+    if ballPlay in balls:
+        ballPlay.show()
+    elif ballPlay not in balls:
+        gameOver = True
+        if gameOver:
+            renderGameOver()
+        scoreValue = 0
+        ballPlay = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT // 2, - velocity, 150)
+        balls.append(ballPlay)
+        pygame.display.flip()
+        gameOver = False
+        time.sleep(5)
+
     pygame.display.flip()
     ballPlay.update(paddlePlay)
     paddlePlay.update()
-
-pygame.quit()
