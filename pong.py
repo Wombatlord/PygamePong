@@ -21,29 +21,6 @@ velocity = 300
 scoreValue = 0
 
 
-def current_time():
-    return time.time()
-
-
-def timeSince(when):
-    return current_time() - when
-
-
-def renderBackground():
-    background = pygame.Surface(gameState.screen.get_size())
-    background = background.convert()
-    background.fill((0, 175, 0))
-    gameState.screen.blit(background, (0, 0))
-
-
-def renderWalls():
-    global borderColour, WIDTH, BORDER, HEIGHT
-
-    pygame.draw.rect(gameState.screen, borderColour, pygame.Rect((0, 0), (WIDTH, BORDER)))
-    pygame.draw.rect(gameState.screen, borderColour, pygame.Rect((0, 0), (BORDER, HEIGHT)))
-    pygame.draw.rect(gameState.screen, borderColour, pygame.Rect((0, HEIGHT - BORDER), (WIDTH, BORDER)))
-
-
 # Instantiate Game Objects
 scoreBoard = ScoreBoard()
 paddle = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT // 2 - Paddle.HEIGHT // 2, paddleColour)
@@ -70,15 +47,15 @@ while gameOn:
         gameOn = False
 
     gameState.renderBackground()
-    scoreBoard.show(gameState.screen)
+    gameState.scoreBoard.show(gameState.screen)
     gameState.renderWalls()
-    paddle.show(gameState.screen)
+    gameState.paddle.show(gameState.screen)
 
     if ball in balls:
         ball.show(gameState.screen)
     elif ball not in balls:
-        scoreBoard.displayGameOver(gameState.screen)
-        scoreBoard.reset()
+        gameState.scoreBoard.displayGameOver(gameState.screen)
+        gameState.scoreBoard.reset()
         ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT // 2, - velocity, 150, ballColour)
         balls.append(ball)
         pygame.display.flip()
@@ -87,6 +64,6 @@ while gameOn:
 
     pygame.display.flip()
     ball.update(paddle, WIDTH, HEIGHT, BORDER, balls)
-    paddle.update(BORDER, HEIGHT)
+    gameState.paddle.update(BORDER, HEIGHT)
 
 pygame.quit()
