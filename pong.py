@@ -13,7 +13,7 @@ BORDER = 20
 
 
 # Game Object Variables
-fgColour = pygame.Color("red")
+borderColour = pygame.Color("red")
 ballColour = pygame.Color("black")
 paddleColour = pygame.Color("blue")
 
@@ -37,11 +37,11 @@ def renderBackground():
 
 
 def renderWalls():
-    global screen, fgColour, WIDTH, BORDER, HEIGHT
+    global borderColour, WIDTH, BORDER, HEIGHT
 
-    pygame.draw.rect(gameState.screen, fgColour, pygame.Rect((0, 0), (WIDTH, BORDER)))
-    pygame.draw.rect(gameState.screen, fgColour, pygame.Rect((0, 0), (BORDER, HEIGHT)))
-    pygame.draw.rect(gameState.screen, fgColour, pygame.Rect((0, HEIGHT - BORDER), (WIDTH, BORDER)))
+    pygame.draw.rect(gameState.screen, borderColour, pygame.Rect((0, 0), (WIDTH, BORDER)))
+    pygame.draw.rect(gameState.screen, borderColour, pygame.Rect((0, 0), (BORDER, HEIGHT)))
+    pygame.draw.rect(gameState.screen, borderColour, pygame.Rect((0, HEIGHT - BORDER), (WIDTH, BORDER)))
 
 
 # Instantiate Game Objects
@@ -51,7 +51,15 @@ ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT // 2, - velocity, velocity, ballCo
 balls = [ball]
 
 # I really tried.
-gameState = GameState(pygame.display.set_mode((WIDTH, HEIGHT)), ball, paddle, scoreBoard)
+gameState = GameState(pygame.display.set_mode((WIDTH, HEIGHT)),
+                      ball,
+                      paddle,
+                      scoreBoard,
+                      WIDTH,
+                      HEIGHT,
+                      BORDER,
+                      borderColour
+                      )
 
 # Game Loop Flags
 gameOn = True
@@ -61,9 +69,9 @@ while gameOn:
     if e.type == pygame.QUIT:
         gameOn = False
 
-    renderBackground()
+    gameState.renderBackground()
     scoreBoard.show(gameState.screen)
-    renderWalls()
+    gameState.renderWalls()
     paddle.show(gameState.screen)
 
     if ball in balls:

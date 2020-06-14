@@ -213,11 +213,15 @@ class Ball:
 
 # I tried.
 class GameState:
-    def __init__(self, screen, ball: Ball, paddle: Paddle, scoreBoard: ScoreBoard):
+    def __init__(self, screen, ball: Ball, paddle: Paddle, scoreBoard: ScoreBoard, width, height, border, borderColour):
         self.screen = screen
         self.ball = ball
         self.paddle = paddle
         self.scoreBoard = scoreBoard
+        self.width = width
+        self.height = height
+        self.border = border
+        self.borderColour = borderColour
 
     def updateGameState(self):
         self.ball.update(self.paddle)
@@ -227,3 +231,14 @@ class GameState:
         self.ball.show(self.screen)
         self.paddle.show(self.screen)
         self.scoreBoard.show(self.screen)
+
+    def renderBackground(self):
+        background = pygame.Surface(self.screen.get_size())
+        background = background.convert()
+        background.fill((0, 175, 0))
+        self.screen.blit(background, (0, 0))
+
+    def renderWalls(self):
+        pygame.draw.rect(self.screen, self.borderColour, pygame.Rect((0, 0), (self.width, self.border)))
+        pygame.draw.rect(self.screen, self.borderColour, pygame.Rect((0, 0), (self.border, self.height)))
+        pygame.draw.rect(self.screen, self.borderColour, pygame.Rect((0, self.height - self.border), (self.width, self.border)))
