@@ -3,7 +3,7 @@ import time
 import random
 
 scoreValue = 0
-
+randomRGB = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),)
 
 def current_time():
     """
@@ -27,7 +27,7 @@ class ScoreBoard:
     """
     SIZE = (300, 100)
     POSITION = (50, 50)
-    gameOverMessage = 'You Suck!'
+    gameOverMessage = 'fucked it'
 
     def __init__(self):
         pass
@@ -54,8 +54,8 @@ class ScoreBoard:
         font = pygame.font.Font(None, 36)
         score = font.render(str(scoreValue), 1, (10, 10, 10))
         textPos = score.get_rect(
-            centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] // 2,
-            centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] // 2
+            centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] * 0.5,
+            centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] * 0.5
         )
         screen.blit(score, textPos)
 
@@ -70,8 +70,8 @@ class ScoreBoard:
         font = pygame.font.Font(None, 36)
         text = font.render(ScoreBoard.gameOverMessage, 1, (10, 10, 10))
         textPos = text.get_rect(
-            centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] // 2,
-            centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] // 2 + 25
+            centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] * 0.5,
+            centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] * 0.5 + 25
         )
         screen.blit(text, textPos)
 
@@ -109,19 +109,19 @@ class Paddle:
         Updates the paddle position and defines the boundaries of the play space.
         Positional tracking is used to prevent paddle leaving the screen, not hitbox collisions.
         """
-        upperBound = Paddle.HEIGHT // 2 + borderSize
-        lowerBound = height - Paddle.HEIGHT // 2 - borderSize
+        upperBound = Paddle.HEIGHT * 0.5 + borderSize
+        lowerBound = height - Paddle.HEIGHT * 0.5 - borderSize
         outOfBoundsAbove = pygame.mouse.get_pos()[1] < upperBound
         outOfBoundsBelow = pygame.mouse.get_pos()[1] > lowerBound
 
         if not outOfBoundsAbove and not outOfBoundsBelow:
-            self.y = pygame.mouse.get_pos()[1] - Paddle.HEIGHT // 2
+            self.y = pygame.mouse.get_pos()[1] - Paddle.HEIGHT * 0.5
 
         elif outOfBoundsAbove:
-            self.y = upperBound - Paddle.HEIGHT // 2
+            self.y = upperBound - Paddle.HEIGHT * 0.5
 
         elif outOfBoundsBelow:
-            self.y = lowerBound - Paddle.HEIGHT // 2
+            self.y = lowerBound - Paddle.HEIGHT * 0.5
 
         else:
             raise ValueError('ya fucked it')
@@ -129,7 +129,7 @@ class Paddle:
 
 class Ball:
     """
-    Balls are responsible for:
+    liveBalls are responsible for:
     Providing a hit-box,
     showing a ball,
     destroying a ball,
@@ -159,15 +159,15 @@ class Ball:
         """
         pygame.draw.circle(screen, self.colour, (int(self.x), int(self.y)), Ball.RADIUS)
 
-    def destroy(self, balls):
+    def destroy(self, liveBalls):
         """
-        Removes ball object from list of balls to ensure invalid balls are not displayed.
+        Removes ball object from list of liveBalls to ensure invalid liveBalls are not displayed.
         """
-        balls.remove(self)
+        liveBalls.remove(self)
 
-    def update(self, paddle: Paddle, width, height, border, balls):
+    def update(self, paddle: Paddle, width, height, border, liveBalls):
         """
-        Updates x and y position of the ball based on original positions combined with time.
+        Updates x and y position of the ball based on original positions combined with time differential.
         Detects collision with paddle or walls and reverses travel direction.
         Increments Score Value for display on score board.
         Destroys the ball if it travels off screen right.
@@ -187,11 +187,6 @@ class Ball:
 
         hasCollided = self.getHitBox().colliderect(paddle.getHitBox())
         horizontalOutOfBounds = newX < border + Ball.RADIUS
-        offScreen = newX > width
-
-        if offScreen:
-            self.destroy(balls)
-            return
 
         if horizontalOutOfBounds:
             scoreValue += 1
@@ -213,19 +208,42 @@ class Ball:
 
 # I tried.
 class GameState:
-    def __init__(self, screen, ball: Ball, paddle: Paddle, scoreBoard: ScoreBoard, width, height, border, borderColour):
+
+    def __init__(self, screen, ball: Ball, paddle: Paddle, liveBalls, scoreBoard: ScoreBoard,
+                 width, height, border, borderColour, backgroundColour):
         self.screen = screen
         self.ball = ball
         self.paddle = paddle
+        self.liveBalls = liveBalls
         self.scoreBoard = scoreBoard
         self.width = width
         self.height = height
         self.border = border
         self.borderColour = borderColour
+        self.backgroundColour = backgroundColour
 
     def updateGameState(self):
-        self.ball.update(self.paddle)
-        self.paddle.update()
+        self.ball.update(self.paddle, self.width, self.height, self.border, self.liveBalls)
+        self.paddle.update(self.border, self.height)
+
+    def newBall(self):
+        initialVelocity = 300
+        ballColour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),)
+        self.ball = Ball(self.width - Ball.RADIUS - 250, self.height * 0.5, - initialVelocity, initialVelocity,
+                         ballColour)
+        self.liveBalls.append(self.ball)
+
+    def resetGame(self):
+        self.newBall()
+
+    def gameOver(self):
+        self.scoreBoard.displayGameOver(self.screen)
+        self.scoreBoard.reset()
+        self.destroyBall()
+        pygame.display.flip()
+
+    def destroyBall(self):
+        self.liveBalls.remove(self.ball)
 
     def show(self):
         self.ball.show(self.screen)
@@ -235,10 +253,11 @@ class GameState:
     def renderBackground(self):
         background = pygame.Surface(self.screen.get_size())
         background = background.convert()
-        background.fill((0, 175, 0))
+        background.fill(self.backgroundColour)
         self.screen.blit(background, (0, 0))
 
     def renderWalls(self):
         pygame.draw.rect(self.screen, self.borderColour, pygame.Rect((0, 0), (self.width, self.border)))
         pygame.draw.rect(self.screen, self.borderColour, pygame.Rect((0, 0), (self.border, self.height)))
-        pygame.draw.rect(self.screen, self.borderColour, pygame.Rect((0, self.height - self.border), (self.width, self.border)))
+        pygame.draw.rect(self.screen, self.borderColour,
+                         pygame.Rect((0, self.height - self.border), (self.width, self.border)))

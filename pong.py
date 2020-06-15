@@ -7,35 +7,36 @@ pygame.display.set_caption("PONGO!")
 pygame.mouse.set_visible(0)
 
 # Screen Variables
-HEIGHT = 600
-WIDTH = 1200
+HEIGHT = 720
+WIDTH = 1080
 BORDER = 20
-
 
 # Game Object Variables
 borderColour = pygame.Color("red")
+backgroundColour = (0, 175, 0)
 ballColour = pygame.Color("black")
 paddleColour = pygame.Color("blue")
 
 velocity = 300
 scoreValue = 0
 
-
 # Instantiate Game Objects
 scoreBoard = ScoreBoard()
-paddle = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT // 2 - Paddle.HEIGHT // 2, paddleColour)
-ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT // 2, - velocity, velocity, ballColour)
-balls = [ball]
+paddle = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT * 0.5 - Paddle.HEIGHT * 0.5, paddleColour)
+ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT * 0.5, - velocity, velocity, ballColour)
+liveBalls = []
 
 # I really tried.
 gameState = GameState(pygame.display.set_mode((WIDTH, HEIGHT)),
                       ball,
                       paddle,
+                      liveBalls,
                       scoreBoard,
                       WIDTH,
                       HEIGHT,
                       BORDER,
-                      borderColour
+                      borderColour,
+                      backgroundColour
                       )
 
 # Game Loop Flags
@@ -51,19 +52,35 @@ while gameOn:
     gameState.renderWalls()
     gameState.paddle.show(gameState.screen)
 
-    if ball in balls:
-        ball.show(gameState.screen)
-    elif ball not in balls:
+    if gameState.ball not in gameState.liveBalls:
+        gameState.resetGame()
+
+    if gameState.ball.x < gameState.width:
+        gameState.ball.show(gameState.screen)
+        # print('live ball')
+
+    if gameState.ball.x > gameState.width:
+        # print('dead ball')
+        gameState.gameOver()
+        time.sleep(2)
+
+    gameState.updateGameState()
+    pygame.display.flip()
+
+    """
+    if ball in gameState.liveBalls:
+        print('okay')
+        gameState.ball.show(gameState.screen)
+    elif ball not in gameState.liveBalls:
         gameState.scoreBoard.displayGameOver(gameState.screen)
         gameState.scoreBoard.reset()
-        ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT // 2, - velocity, 150, ballColour)
-        balls.append(ball)
+        gameState.newBall(liveBalls)
         pygame.display.flip()
         gameOver = False
-        time.sleep(5)
-
-    pygame.display.flip()
-    ball.update(paddle, WIDTH, HEIGHT, BORDER, balls)
-    gameState.paddle.update(BORDER, HEIGHT)
+        time.sleep(2)
+    
+    ball.update(gameState.paddle, WIDTH, HEIGHT, BORDER, gameState.liveBalls)
+    paddle.update(BORDER, HEIGHT)
+    """
 
 pygame.quit()
