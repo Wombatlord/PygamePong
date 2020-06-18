@@ -5,6 +5,7 @@ import random
 scoreValue = 0
 randomRGB = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),)
 
+
 def current_time():
     """
     Returns the current time.
@@ -51,7 +52,7 @@ class ScoreBoard:
         Positions the string within the score board surface.
         Blits the surface to the main screen.
         """
-        font = pygame.font.Font(None, 36)
+        font = pygame.font.SysFont("comicsansms", 36)
         score = font.render(str(scoreValue), 1, (10, 10, 10))
         textPos = score.get_rect(
             centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] * 0.5,
@@ -67,7 +68,7 @@ class ScoreBoard:
         Blits the surface to the main screen.
         """
         global scoreValue
-        font = pygame.font.Font(None, 36)
+        font = pygame.font.SysFont('comicsansms', 36)
         text = font.render(ScoreBoard.gameOverMessage, 1, (10, 10, 10))
         textPos = text.get_rect(
             centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] * 0.5,
@@ -115,12 +116,21 @@ class Paddle:
         outOfBoundsBelow = pygame.mouse.get_pos()[1] > lowerBound
 
         if not outOfBoundsAbove and not outOfBoundsBelow:
+            """
+            Controls the paddle Y position with the mouse.
+            """
             self.y = pygame.mouse.get_pos()[1] - Paddle.HEIGHT * 0.5
 
         elif outOfBoundsAbove:
+            """
+            Prevent the paddle from moving beyond an upper limit.
+            """
             self.y = upperBound - Paddle.HEIGHT * 0.5
 
         elif outOfBoundsBelow:
+            """
+            Prevent the paddle from moving beyond a lower limit.
+            """
             self.y = lowerBound - Paddle.HEIGHT * 0.5
 
         else:
@@ -197,9 +207,14 @@ class Ball:
             self.vx = -abs(self.vx) + random.randint(-25, 25)
             self.vy = -abs(self.vy) + random.randint(-200, 350)
 
-        if newY < border + Ball.RADIUS or newY > height - border - Ball.RADIUS:
+        if newY < border + Ball.RADIUS:
             scoreValue += 1
-            self.vy = -self.vy
+            self.vy = +abs(self.vy)
+            newY = self.y + timeSinceLastUpdate * self.vy
+
+        if newY > height - border - Ball.RADIUS:
+            scoreValue += 1
+            self.vy = -abs(self.vy)
             newY = self.y + timeSinceLastUpdate * self.vy
 
         self.x = newX
@@ -209,8 +224,19 @@ class Ball:
 # I tried.
 class GameState:
 
-    def __init__(self, screen, ball: Ball, paddle: Paddle, liveBalls, scoreBoard: ScoreBoard,
-                 width, height, border, borderColour, backgroundColour):
+    def __init__(
+        self,
+        screen,
+        ball: Ball,
+        paddle: Paddle,
+        liveBalls,
+        scoreBoard: ScoreBoard,
+        width,
+        height,
+        border,
+        borderColour,
+        backgroundColour,
+    ):
         self.screen = screen
         self.ball = ball
         self.paddle = paddle
@@ -223,27 +249,36 @@ class GameState:
         self.backgroundColour = backgroundColour
 
     def updateGameState(self):
-        self.ball.update(self.paddle, self.width, self.height, self.border, self.liveBalls)
+        for self.ball in self.liveBalls:
+            self.ball.update(self.paddle, self.width, self.height, self.border, self.liveBalls)
         self.paddle.update(self.border, self.height)
 
     def newBall(self):
-        initialVelocity = 300
-        ballColour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),)
-        self.ball = Ball(self.width - Ball.RADIUS - 250, self.height * 0.5, - initialVelocity, initialVelocity,
-                         ballColour)
-        self.liveBalls.append(self.ball)
+        initialVelocityY = random.randint(-100, 200)
+        initialVelocityX = random.randint(400, 600)
+        ballColour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
-    def resetGame(self):
-        self.newBall()
+        self.ball = Ball(
+            self.width - Ball.RADIUS - random.randint(50, 500),
+            random.randint(50, self.height) - self.border,
+            - initialVelocityX,
+            initialVelocityY,
+            ballColour,
+        )
+
+        self.liveBalls.append(self.ball)
+        # print(initialVelocityX, initialVelocityY)
 
     def gameOver(self):
         self.scoreBoard.displayGameOver(self.screen)
         self.scoreBoard.reset()
-        self.destroyBall()
         pygame.display.flip()
 
     def destroyBall(self):
         self.liveBalls.remove(self.ball)
+
+    def changeBallColour(self):
+        self.ball.colour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
     def show(self):
         self.ball.show(self.screen)
@@ -257,7 +292,18 @@ class GameState:
         self.screen.blit(background, (0, 0))
 
     def renderWalls(self):
-        pygame.draw.rect(self.screen, self.borderColour, pygame.Rect((0, 0), (self.width, self.border)))
-        pygame.draw.rect(self.screen, self.borderColour, pygame.Rect((0, 0), (self.border, self.height)))
-        pygame.draw.rect(self.screen, self.borderColour,
-                         pygame.Rect((0, self.height - self.border), (self.width, self.border)))
+        pygame.draw.rect(
+            self.screen,
+            self.borderColour,
+            pygame.Rect((0, 0), (self.width, self.border)),
+        )
+        pygame.draw.rect(
+            self.screen,
+            self.borderColour,
+            pygame.Rect((0, 0), (self.border, self.height)),
+        )
+        pygame.draw.rect(
+            self.screen,
+            self.borderColour,
+            pygame.Rect((0, self.height - self.border), (self.width, self.border)),
+        )

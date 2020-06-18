@@ -27,25 +27,32 @@ ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT * 0.5, - velocity, velocity, ballC
 liveBalls = []
 
 # I really tried.
-gameState = GameState(pygame.display.set_mode((WIDTH, HEIGHT)),
-                      ball,
-                      paddle,
-                      liveBalls,
-                      scoreBoard,
-                      WIDTH,
-                      HEIGHT,
-                      BORDER,
-                      borderColour,
-                      backgroundColour
-                      )
+gameState = GameState(
+    pygame.display.set_mode((WIDTH, HEIGHT)),
+    ball,
+    paddle,
+    liveBalls,
+    scoreBoard,
+    WIDTH,
+    HEIGHT,
+    BORDER,
+    borderColour,
+    backgroundColour
+)
 
 # Game Loop Flags
 gameOn = True
+#print(pygame.font.get_fonts())
 
 while gameOn:
     e = pygame.event.poll()
+    keys = pygame.key.get_pressed()
+
     if e.type == pygame.QUIT:
         gameOn = False
+
+    if e.type == pygame.KEYDOWN and keys[pygame.K_SPACE]:
+        gameState.newBall()
 
     gameState.renderBackground()
     gameState.scoreBoard.show(gameState.screen)
@@ -53,34 +60,41 @@ while gameOn:
     gameState.paddle.show(gameState.screen)
 
     if gameState.ball not in gameState.liveBalls:
-        gameState.resetGame()
+        gameState.newBall()
 
-    if gameState.ball.x < gameState.width:
-        gameState.ball.show(gameState.screen)
-        # print('live ball')
+    for gameState.ball in gameState.liveBalls:
+        if gameState.ball.x < gameState.width:
+            gameState.ball.show(gameState.screen)
+            # print('live ball')
 
-    if gameState.ball.x > gameState.width:
-        # print('dead ball')
+        if gameState.ball.x > gameState.width:
+            #print('dead ball')
+            gameState.ball.destroy(gameState.liveBalls)
+
+    if len(gameState.liveBalls) == 0:
         gameState.gameOver()
-        time.sleep(2)
+        pygame.event.wait()
+        # time.sleep(2)
 
     gameState.updateGameState()
     pygame.display.flip()
 
-    """
-    if ball in gameState.liveBalls:
-        print('okay')
-        gameState.ball.show(gameState.screen)
-    elif ball not in gameState.liveBalls:
-        gameState.scoreBoard.displayGameOver(gameState.screen)
-        gameState.scoreBoard.reset()
-        gameState.newBall(liveBalls)
-        pygame.display.flip()
-        gameOver = False
-        time.sleep(2)
-    
-    ball.update(gameState.paddle, WIDTH, HEIGHT, BORDER, gameState.liveBalls)
-    paddle.update(BORDER, HEIGHT)
-    """
-
 pygame.quit()
+
+"""
+if ball in gameState.liveBalls:
+     print('okay')
+     gameState.ball.show(gameState.screen)
+elif ball not in gameState.liveBalls:
+     gameState.scoreBoard.displayGameOver(gameState.screen)
+     gameState.scoreBoard.reset()
+     gameState.newBall(liveBalls)
+     pygame.display.flip()
+     gameOver = False
+     time.sleep(2)
+    
+ball.update(gameState.paddle, WIDTH, HEIGHT, BORDER, gameState.liveBalls)
+paddle.update(BORDER, HEIGHT)
+"""
+
+
