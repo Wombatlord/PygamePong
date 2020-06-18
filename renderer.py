@@ -2,6 +2,7 @@ import pygame
 
 from pongEntities import Ball, Paddle, GameState, ScoreBoard
 
+# Config Parameters
 screen: pygame.Surface
 screenDimensions = (720, 1080)
 backgroundColour: tuple
@@ -10,6 +11,10 @@ borderWidth = 25
 
 
 def initialise(bkgrndCol, brdrCol, screenDims=None, brdrWidth=None):
+    """
+    Creates the main Surface for display according to passed in config parameters.
+    Parameters are background colour and border colour as RGB tuples, X & Y dimensions, and border thickness.
+    """
     global screen, screenDimensions, backgroundColour, borderColour, borderWidth
     borderColour = brdrCol
     backgroundColour = bkgrndCol
@@ -33,10 +38,14 @@ def renderPaddle(paddle: Paddle):
 
 
 def renderScoreboard(gameState: GameState):
+    """
+    Displays the final score total and Game Over Message on the score board Surface.
+    """
     if gameState.gameIsOver:
         renderGameOnScore(gameState.scoreValue)
         displayGameOver()
         pygame.display.flip()
+
 
 def displayGameOver():
     """
@@ -81,6 +90,10 @@ def renderGameOnScore(scoreValue):
 
 
 def renderWalls():
+    """
+    Renders three walls on screen. Top / Bottom / Left.
+    Walls are drawn according to screen dimension and border width config parameter.
+    """
     global screen, borderColour, borderWidth
     pygame.draw.rect(
         screen,
@@ -100,6 +113,12 @@ def renderWalls():
 
 
 def blitBackground():
+    """
+    Creates a background surface equivalent to main screen size.
+    Converts surface for quick display.
+    Fills background with configured colour.
+    Blits the background to the background Surface.
+    """
     global screen, backgroundColour
     background = pygame.Surface(screen.get_size())
     background = background.convert()
@@ -111,6 +130,10 @@ def blitBackground():
 
 
 def render(gameState: GameState):
+    """
+    Combines renderer functions to display GameState.
+    Call this function once in the main loop to provide display output.
+    """
     blitBackground()
     renderWalls()
     renderScoreboard(gameState)

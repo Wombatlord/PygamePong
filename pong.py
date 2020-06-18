@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 from pongEntities import ScoreBoard, Ball, Paddle, GameState
 from renderer import initialise, render, renderScoreboard
 
@@ -18,7 +18,6 @@ ballColour = pygame.Color("black")
 paddleColour = pygame.Color("blue")
 
 velocity = 300
-scoreValue = 0
 
 # Instantiate Game Objects
 scoreBoard = ScoreBoard()
@@ -70,15 +69,14 @@ while gameOn:
             gameState.ball.destroy(gameState.liveBalls)
 
     if len(gameState.liveBalls) == 0:
-        print('end')
         gameState.gameOver()
         renderScoreboard(gameState)
+        time.sleep(2)
         pygame.event.wait()
         gameState.resetScore()
         gameState.gameIsOver = False
 
     gameState.updateGameState()
-    pygame.display.flip()
 
 pygame.quit()
 

@@ -193,11 +193,19 @@ class GameState:
         self.gameIsOver = False
 
     def updateGameState(self):
+        """
+        Tracks position and collision of each ball. Updates total score value based on return value from each ball.
+        Tracks paddle and collision with walls.
+        """
         for self.ball in self.liveBalls:
             self.scoreValue = self.ball.update(self.paddle, self.height, self.border, self.scoreValue)
         self.paddle.update(self.border, self.height)
 
     def newBall(self):
+        """
+        Instantiates a new ball object and appends it to the liveBalls list.
+        Initial X & Y Positions, and RGB colour value, are randomly determined at instantiation.
+        """
         initialVelocityY = random.randint(-100, 200)
         initialVelocityX = random.randint(400, 600)
         ballColour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
@@ -214,6 +222,10 @@ class GameState:
         # print(initialVelocityX, initialVelocityY)
 
     def gameOver(self):
+        """
+        Sets a flag to trigger Game Over State.
+        Used to display game over message and freeze game play.
+        """
         self.gameIsOver = True
 
     def resetScore(self):
