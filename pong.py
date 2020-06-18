@@ -1,6 +1,6 @@
 import pygame
-import time
 from pongEntities import ScoreBoard, Ball, Paddle, GameState
+from renderer import initialise, render
 
 pygame.init()
 pygame.display.set_caption("PONGO!")
@@ -40,9 +40,15 @@ gameState = GameState(
     backgroundColour
 )
 
+initialise(
+    backgroundColour,
+    borderColour,
+    (WIDTH, HEIGHT),
+    BORDER
+)
+
 # Game Loop Flags
 gameOn = True
-#print(pygame.font.get_fonts())
 
 while gameOn:
     e = pygame.event.poll()
@@ -54,47 +60,22 @@ while gameOn:
     if e.type == pygame.KEYDOWN and keys[pygame.K_SPACE]:
         gameState.newBall()
 
-    gameState.renderBackground()
-    gameState.scoreBoard.show(gameState.screen)
-    gameState.renderWalls()
-    gameState.paddle.show(gameState.screen)
+    render(gameState)
 
     if gameState.ball not in gameState.liveBalls:
         gameState.newBall()
 
     for gameState.ball in gameState.liveBalls:
-        if gameState.ball.x < gameState.width:
-            gameState.ball.show(gameState.screen)
-            # print('live ball')
-
         if gameState.ball.x > gameState.width:
-            #print('dead ball')
             gameState.ball.destroy(gameState.liveBalls)
 
     if len(gameState.liveBalls) == 0:
         gameState.gameOver()
         pygame.event.wait()
-        # time.sleep(2)
 
     gameState.updateGameState()
     pygame.display.flip()
 
 pygame.quit()
-
-"""
-if ball in gameState.liveBalls:
-     print('okay')
-     gameState.ball.show(gameState.screen)
-elif ball not in gameState.liveBalls:
-     gameState.scoreBoard.displayGameOver(gameState.screen)
-     gameState.scoreBoard.reset()
-     gameState.newBall(liveBalls)
-     pygame.display.flip()
-     gameOver = False
-     time.sleep(2)
-    
-ball.update(gameState.paddle, WIDTH, HEIGHT, BORDER, gameState.liveBalls)
-paddle.update(BORDER, HEIGHT)
-"""
 
 
