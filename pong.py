@@ -73,8 +73,7 @@ while gameOn:
         renderScoreboard(gameState)
         time.sleep(2)
         pygame.event.wait()
-        gameState.resetScore()
-        gameState.gameIsOver = False
+        gameState.resetGame()
 
     gameState.updateGameState()
 

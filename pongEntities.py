@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import math
 
 scoreValue = 0
 randomRGB = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),)
@@ -138,14 +139,22 @@ class Ball:
         hasCollided = self.getHitBox().colliderect(paddle.getHitBox())
         horizontalOutOfBounds = newX < border + Ball.RADIUS
 
+        paddleCOM = paddle.y + int(paddle.HEIGHT * 0.5)
+
         if horizontalOutOfBounds:
             scrValue += 1
             self.vx = -self.vx + random.randint(25, 100)
             newX = self.x + timeSinceLastUpdate * self.vx
 
         if hasCollided:
-            self.vx = -abs(self.vx) + random.randint(-25, 25)
-            self.vy = -abs(self.vy) + random.randint(-200, 350)
+            speed = math.sqrt(float(self.vx) ** 2.0 + float(self.vy) ** 2.0)
+            newSpeed = int(speed) + random.randint(-25, 50)
+            newSpeed = max(newSpeed, 100)
+            offset = -(paddleCOM - self.y) * 2 / paddle.HEIGHT
+            reboundAngle = offset * math.pi / 3
+
+            self.vy = newSpeed * math.sin(reboundAngle)
+            self.vx = -abs(newSpeed * math.cos(reboundAngle))
 
         if newY < border + Ball.RADIUS:
             scrValue += 1
@@ -167,17 +176,17 @@ class Ball:
 class GameState:
 
     def __init__(
-        self,
-        screen,
-        ball: Ball,
-        paddle: Paddle,
-        liveBalls,
-        scoreBoard: ScoreBoard,
-        width,
-        height,
-        border,
-        borderColour,
-        backgroundColour,
+            self,
+            screen,
+            ball: Ball,
+            paddle: Paddle,
+            liveBalls,
+            scoreBoard: ScoreBoard,
+            width,
+            height,
+            border,
+            borderColour,
+            backgroundColour,
     ):
         self.screen = screen
         self.ball = ball
@@ -227,6 +236,10 @@ class GameState:
         Used to display game over message and freeze game play.
         """
         self.gameIsOver = True
+
+    def resetGame(self):
+        self.gameIsOver = False
+        self.resetScore()
 
     def resetScore(self):
         self.scoreValue = 0
