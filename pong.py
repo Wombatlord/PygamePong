@@ -1,6 +1,6 @@
 import pygame
 from pongEntities import ScoreBoard, Ball, Paddle, GameState
-from renderer import initialise, render
+from renderer import initialise, render, renderScoreboard
 
 pygame.init()
 pygame.display.set_caption("PONGO!")
@@ -70,8 +70,12 @@ while gameOn:
             gameState.ball.destroy(gameState.liveBalls)
 
     if len(gameState.liveBalls) == 0:
+        print('end')
         gameState.gameOver()
+        renderScoreboard(gameState)
         pygame.event.wait()
+        gameState.resetScore()
+        gameState.gameIsOver = False
 
     gameState.updateGameState()
     pygame.display.flip()

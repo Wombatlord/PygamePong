@@ -33,12 +33,12 @@ def renderPaddle(paddle: Paddle):
 
 
 def renderScoreboard(gameState: GameState):
-    renderGameOnScore(gameState.scoreValue)
     if gameState.gameIsOver:
-        displayGameOver(gameState.scoreValue)
+        renderGameOnScore(gameState.scoreValue)
+        displayGameOver()
+        pygame.display.flip()
 
-
-def displayGameOver(scoreValue):
+def displayGameOver():
     """
     Creates the font object for game over message display.
     Passes the game over message to be rendered along with colour as RGB.
@@ -114,6 +114,7 @@ def render(gameState: GameState):
     blitBackground()
     renderWalls()
     renderScoreboard(gameState)
+    renderGameOnScore(gameState.scoreValue)
     for ball in gameState.liveBalls:
         if ball.x < gameState.width:
             renderBall(ball)
