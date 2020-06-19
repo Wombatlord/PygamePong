@@ -27,7 +27,7 @@ paddle: Paddle = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT * 0.5 - Paddle
 ball: Ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT * 0.5, - velocity, velocity, ballColour)
 liveBalls: list = [ball]
 
-# I really tried.
+# Instantiate GameState and pass screen config parameters.
 gameState: GameState = GameState(
     pygame.display.set_mode((WIDTH, HEIGHT)),
     paddle,
@@ -46,6 +46,8 @@ initialise(
     (WIDTH, HEIGHT),
     BORDER
 )
+
+# MAIN LOOP
 
 while gameState.gameOn:
 

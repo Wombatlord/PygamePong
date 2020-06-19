@@ -22,31 +22,11 @@ def timeSince(when):
     return current_time() - when
 
 
-def paddleBounce(ball: Ball, paddle: Paddle):
-    paddleCOM = paddle.y + int(paddle.HEIGHT * 0.5)
-    speed = ball.getVelocity().getMagnitude()
-    newSpeed = int(speed) + random.randint(-25, 50)
-    newSpeed = max(newSpeed, 100)
-    offset = -(paddleCOM - ball.y) * 2 / paddle.HEIGHT
-    reboundAngle = offset * math.pi / 3
-
-    newVelocity = Vector.fromPolarCoOrds(-newSpeed, -reboundAngle)
-    ball.setVelocity(newVelocity)
-
-
-# PROBLEMS.
-def wallBounce(ball: Ball, ):
-    velocity = ball.getVelocity()
-    invertedX = Vector.invertX(velocity)
-    ball.setVelocity(invertedX)
-
-    ball.vx += random.randint(50, 100)
-    newX = ball.x + timeSinceLastUpdate * ball.vx
-
-
 def updateGameState(gameState: GameState) -> GameState:
     """
-    Tracks position and collision of each ball. Updates total score value based on return value from each ball.
+    Checks event queue for user input.
+    Tracks position and collision of each ball.
+    Updates total score value based on return value from each ball.
     Tracks paddle and collision with walls.
     """
     e = pygame.event.poll()
@@ -78,6 +58,33 @@ def updateGameState(gameState: GameState) -> GameState:
     return gameState
 
 
+def paddleBounce(ball: Ball, paddle: Paddle):
+    """
+    Calculates a return angle for a ball colliding with the paddle.
+    Rebound angle is determined by where the ball strikes the paddle.
+    """
+    paddleCOM = paddle.y + int(paddle.HEIGHT * 0.5)
+    speed = ball.getVelocity().getMagnitude()
+    newSpeed = int(speed) + random.randint(-25, 50)
+    newSpeed = max(newSpeed, 100)
+    offset = -(paddleCOM - ball.y) * 2 / paddle.HEIGHT
+    reboundAngle = offset * math.pi / 3
+
+    newVelocity = Vector.fromPolarCoOrds(-newSpeed, -reboundAngle)
+    ball.setVelocity(newVelocity)
+
+
+def wallBounce(ball: Ball):
+    """
+    Inverts the x axis of a ball velocity vector.
+    Increments the x value a random amount.
+    """
+    velocity = ball.getVelocity()
+    invertedX = Vector.invertX(velocity)
+    ball.setVelocity(invertedX)
+    ball.vx += random.randint(50, 100)
+
+
 def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
     """
     Updates x and y position of the ball based on original positions combined with time differential.
@@ -98,20 +105,14 @@ def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
     newY = ball.y + timeSinceLastUpdate * ball.vy
 
     paddleCollide = ball.getHitBox().colliderect(paddle.getHitBox())
-    backWallBounce = newX < border + ball.RADIUS
-
-    if backWallBounce:
-        scrValue += 1
-
-        velocity = ball.getVelocity()
-        invertedX = Vector.invertX(velocity)
-        ball.setVelocity(invertedX)
-
-        ball.vx += random.randint(50, 100)
-        newX = ball.x + timeSinceLastUpdate * ball.vx
-
     if paddleCollide:
         paddleBounce(ball, paddle)
+
+    hitBackWall = newX < border + ball.RADIUS
+    if hitBackWall:
+        scrValue += 1
+        wallBounce(ball)
+        newX = ball.x + timeSinceLastUpdate * ball.vx
 
     if newY < border + ball.RADIUS:
         scrValue += 1
