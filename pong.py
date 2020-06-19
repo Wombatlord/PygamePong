@@ -1,4 +1,6 @@
 import pygame, time
+
+import engine
 from pongEntities import ScoreBoard, Ball, Paddle, GameState
 from renderer import initialise, render, renderScoreboard
 
@@ -75,7 +77,7 @@ while gameOn:
         pygame.event.wait()
         gameState.resetGame()
 
-    gameState.updateGameState()
+    gameState = engine.updateGameState(gameState)
 
 pygame.quit()
 
