@@ -1,7 +1,8 @@
 import pygame
 import time
 import random
-import math
+
+from vector import Vector
 
 scoreValue = 0
 randomRGB = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),)
@@ -23,9 +24,7 @@ def timeSince(when):
 
 class ScoreBoard:
     """
-    Provides a pygame Surface for displaying text and score values.
-    Controls size and position on screen.
-    Handles updating the displayed score and displaying the game over message.
+    Variables for ScoreBoard Surface and Game Over Message.
     """
     SIZE = (300, 100)
     POSITION = (50, 50)
@@ -57,12 +56,10 @@ class Paddle:
 class Ball:
     """
     liveBalls are responsible for:
-    Providing a hit-box,
-    showing a ball,
-    destroying a ball,
-    tracking position,
-    detecting collisions,
-    incrementing score.
+    Providing a hit-box for collision detection,
+    Tracking position,
+    Provide Velocity Vector interface,
+    Change colour.
     """
     RADIUS = 10
 
@@ -80,6 +77,15 @@ class Ball:
         """
         return pygame.Rect((int(self.x) - Ball.RADIUS, int(self.y) - Ball.RADIUS), (Ball.RADIUS * 2, Ball.RADIUS * 2))
 
+    def getVelocity(self) -> Vector:
+        return Vector(self.vx, self.vy)
+
+    def setVelocity(self, vector: Vector):
+        self.vx = vector.x
+        self.vy = vector.y
+
+    def changeColour(self):
+        self.colour = randomRGB
 
 # I tried.
 class GameState:
@@ -136,6 +142,9 @@ class GameState:
         self.gameIsOver = True
 
     def resetGame(self):
+        """
+        Resets Game Over flag, resets score, and instantiates a new ball.
+        """
         self.gameIsOver = False
         self.resetScore()
         self.spawnNewBall()

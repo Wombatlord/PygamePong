@@ -9,26 +9,26 @@ pygame.display.set_caption("PONGO!")
 pygame.mouse.set_visible(0)
 
 # Screen Variables
-HEIGHT = 720
-WIDTH = 1080
-BORDER = 20
+HEIGHT: int = 720
+WIDTH: int = 1080
+BORDER: int = 20
 
 # Game Object Variables
-borderColour = pygame.Color("red")
-backgroundColour = (0, 175, 0)
-ballColour = pygame.Color("black")
-paddleColour = pygame.Color("blue")
+borderColour: pygame.Color = pygame.Color("red")
+backgroundColour: tuple = (0, 175, 0)
+ballColour: pygame.Color = pygame.Color("black")
+paddleColour: pygame.Color = pygame.Color("blue")
 
-velocity = 300
+velocity: int = 300
 
 # Instantiate Game Objects
-scoreBoard = ScoreBoard()
-paddle = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT * 0.5 - Paddle.HEIGHT * 0.5, paddleColour)
-ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT * 0.5, - velocity, velocity, ballColour)
-liveBalls = [ball]
+scoreBoard: ScoreBoard = ScoreBoard()
+paddle: Paddle = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT * 0.5 - Paddle.HEIGHT * 0.5, paddleColour)
+ball: Ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT * 0.5, - velocity, velocity, ballColour)
+liveBalls: list = [ball]
 
 # I really tried.
-gameState = GameState(
+gameState: GameState = GameState(
     pygame.display.set_mode((WIDTH, HEIGHT)),
     paddle,
     liveBalls,

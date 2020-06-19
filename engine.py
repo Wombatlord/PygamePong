@@ -5,6 +5,7 @@ import time
 import pygame
 
 from pongEntities import GameState, Ball, Paddle
+from vector import Vector
 
 
 def current_time():
@@ -19,6 +20,28 @@ def timeSince(when):
     Returns the value of current_time minus a given value.
     """
     return current_time() - when
+
+
+def paddleBounce(ball: Ball, paddle: Paddle):
+    paddleCOM = paddle.y + int(paddle.HEIGHT * 0.5)
+    speed = ball.getVelocity().getMagnitude()
+    newSpeed = int(speed) + random.randint(-25, 50)
+    newSpeed = max(newSpeed, 100)
+    offset = -(paddleCOM - ball.y) * 2 / paddle.HEIGHT
+    reboundAngle = offset * math.pi / 3
+
+    newVelocity = Vector.fromPolarCoOrds(-newSpeed, -reboundAngle)
+    ball.setVelocity(newVelocity)
+
+
+# PROBLEMS.
+def wallBounce(ball: Ball, ):
+    velocity = ball.getVelocity()
+    invertedX = Vector.invertX(velocity)
+    ball.setVelocity(invertedX)
+
+    ball.vx += random.randint(50, 100)
+    newX = ball.x + timeSinceLastUpdate * ball.vx
 
 
 def updateGameState(gameState: GameState) -> GameState:
@@ -74,25 +97,21 @@ def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
     newX = ball.x + timeSinceLastUpdate * ball.vx
     newY = ball.y + timeSinceLastUpdate * ball.vy
 
-    hasCollided = ball.getHitBox().colliderect(paddle.getHitBox())
-    horizontalOutOfBounds = newX < border + ball.RADIUS
+    paddleCollide = ball.getHitBox().colliderect(paddle.getHitBox())
+    backWallBounce = newX < border + ball.RADIUS
 
-    paddleCOM = paddle.y + int(paddle.HEIGHT * 0.5)
-
-    if horizontalOutOfBounds:
+    if backWallBounce:
         scrValue += 1
-        ball.vx = -ball.vx + random.randint(25, 100)
+
+        velocity = ball.getVelocity()
+        invertedX = Vector.invertX(velocity)
+        ball.setVelocity(invertedX)
+
+        ball.vx += random.randint(50, 100)
         newX = ball.x + timeSinceLastUpdate * ball.vx
 
-    if hasCollided:
-        speed = math.sqrt(float(ball.vx) ** 2.0 + float(ball.vy) ** 2.0)
-        newSpeed = int(speed) + random.randint(-25, 50)
-        newSpeed = max(newSpeed, 100)
-        offset = -(paddleCOM - ball.y) * 2 / paddle.HEIGHT
-        reboundAngle = offset * math.pi / 3
-
-        ball.vy = newSpeed * math.sin(reboundAngle)
-        ball.vx = -abs(newSpeed * math.cos(reboundAngle))
+    if paddleCollide:
+        paddleBounce(ball, paddle)
 
     if newY < border + ball.RADIUS:
         scrValue += 1
