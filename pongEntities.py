@@ -53,37 +53,6 @@ class Paddle:
         """
         return pygame.Rect((self.x, self.y), (Paddle.WIDTH, Paddle.HEIGHT))
 
-    def update(self, borderSize, height):
-        """
-        Updates the paddle position and defines the boundaries of the play space.
-        Positional tracking is used to prevent paddle leaving the screen, not hitbox collisions.
-        """
-        upperBound = Paddle.HEIGHT * 0.5 + borderSize
-        lowerBound = height - Paddle.HEIGHT * 0.5 - borderSize
-        outOfBoundsAbove = pygame.mouse.get_pos()[1] < upperBound
-        outOfBoundsBelow = pygame.mouse.get_pos()[1] > lowerBound
-
-        if not outOfBoundsAbove and not outOfBoundsBelow:
-            """
-            Controls the paddle Y position with the mouse.
-            """
-            self.y = pygame.mouse.get_pos()[1] - Paddle.HEIGHT * 0.5
-
-        elif outOfBoundsAbove:
-            """
-            Prevent the paddle from moving beyond an upper limit.
-            """
-            self.y = upperBound - Paddle.HEIGHT * 0.5
-
-        elif outOfBoundsBelow:
-            """
-            Prevent the paddle from moving beyond a lower limit.
-            """
-            self.y = lowerBound - Paddle.HEIGHT * 0.5
-
-        else:
-            raise ValueError('ya fucked it')
-
 
 class Ball:
     """
@@ -111,66 +80,6 @@ class Ball:
         """
         return pygame.Rect((int(self.x) - Ball.RADIUS, int(self.y) - Ball.RADIUS), (Ball.RADIUS * 2, Ball.RADIUS * 2))
 
-    def destroy(self, liveBalls):
-        """
-        Removes ball object from list of liveBalls to ensure invalid liveBalls are not displayed.
-        """
-        liveBalls.remove(self)
-
-    def update(self, paddle: Paddle, height, border, scrValue):
-        """
-        Updates x and y position of the ball based on original positions combined with time differential.
-        Detects collision with paddle or walls and reverses travel direction.
-        Increments Score Value for display on score board.
-        Destroys the ball if it travels off screen right.
-        """
-        now = current_time()
-
-        if self.timeOfLastUpdate is None:
-            timeSinceLastUpdate = 0.0
-        else:
-            timeSinceLastUpdate = timeSince(self.timeOfLastUpdate)
-
-        self.timeOfLastUpdate = now
-
-        newX = self.x + timeSinceLastUpdate * self.vx
-        newY = self.y + timeSinceLastUpdate * self.vy
-
-        hasCollided = self.getHitBox().colliderect(paddle.getHitBox())
-        horizontalOutOfBounds = newX < border + Ball.RADIUS
-
-        paddleCOM = paddle.y + int(paddle.HEIGHT * 0.5)
-
-        if horizontalOutOfBounds:
-            scrValue += 1
-            self.vx = -self.vx + random.randint(25, 100)
-            newX = self.x + timeSinceLastUpdate * self.vx
-
-        if hasCollided:
-            speed = math.sqrt(float(self.vx) ** 2.0 + float(self.vy) ** 2.0)
-            newSpeed = int(speed) + random.randint(-25, 50)
-            newSpeed = max(newSpeed, 100)
-            offset = -(paddleCOM - self.y) * 2 / paddle.HEIGHT
-            reboundAngle = offset * math.pi / 3
-
-            self.vy = newSpeed * math.sin(reboundAngle)
-            self.vx = -abs(newSpeed * math.cos(reboundAngle))
-
-        if newY < border + Ball.RADIUS:
-            scrValue += 1
-            self.vy = +abs(self.vy)
-            newY = self.y + timeSinceLastUpdate * self.vy
-
-        if newY > height - border - Ball.RADIUS:
-            scrValue += 1
-            self.vy = -abs(self.vy)
-            newY = self.y + timeSinceLastUpdate * self.vy
-
-        self.x = newX
-        self.y = newY
-
-        return scrValue
-
 
 # I tried.
 class GameState:
@@ -178,7 +87,6 @@ class GameState:
     def __init__(
             self,
             screen,
-            ball: Ball,
             paddle: Paddle,
             liveBalls,
             scoreBoard: ScoreBoard,
@@ -189,7 +97,6 @@ class GameState:
             backgroundColour,
     ):
         self.screen = screen
-        self.ball = ball
         self.paddle = paddle
         self.liveBalls = liveBalls
         self.scoreBoard = scoreBoard
@@ -200,17 +107,9 @@ class GameState:
         self.backgroundColour = backgroundColour
         self.scoreValue = 0
         self.gameIsOver = False
+        self.gameOn = True
 
-    def updateGameState(self):
-        """
-        Tracks position and collision of each ball. Updates total score value based on return value from each ball.
-        Tracks paddle and collision with walls.
-        """
-        for self.ball in self.liveBalls:
-            self.scoreValue = self.ball.update(self.paddle, self.height, self.border, self.scoreValue)
-        self.paddle.update(self.border, self.height)
-
-    def newBall(self):
+    def spawnNewBall(self):
         """
         Instantiates a new ball object and appends it to the liveBalls list.
         Initial X & Y Positions, and RGB colour value, are randomly determined at instantiation.
@@ -219,18 +118,17 @@ class GameState:
         initialVelocityX = random.randint(400, 600)
         ballColour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
-        self.ball = Ball(
-            self.width - Ball.RADIUS - random.randint(50, 500),
-            random.randint(50, self.height) - self.border,
-            - initialVelocityX,
-            initialVelocityY,
-            ballColour,
+        self.liveBalls.append(
+            Ball(
+                self.width - Ball.RADIUS - random.randint(50, 500),
+                random.randint(50, self.height) - self.border,
+                - initialVelocityX,
+                initialVelocityY,
+                ballColour,
+            )
         )
 
-        self.liveBalls.append(self.ball)
-        # print(initialVelocityX, initialVelocityY)
-
-    def gameOver(self):
+    def setGameOver(self):
         """
         Sets a flag to trigger Game Over State.
         Used to display game over message and freeze game play.
@@ -240,12 +138,7 @@ class GameState:
     def resetGame(self):
         self.gameIsOver = False
         self.resetScore()
+        self.spawnNewBall()
 
     def resetScore(self):
         self.scoreValue = 0
-
-    def destroyBall(self):
-        self.liveBalls.remove(self.ball)
-
-    def changeBallColour(self):
-        self.ball.colour = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))

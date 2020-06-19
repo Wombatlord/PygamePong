@@ -25,12 +25,11 @@ velocity = 300
 scoreBoard = ScoreBoard()
 paddle = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT * 0.5 - Paddle.HEIGHT * 0.5, paddleColour)
 ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT * 0.5, - velocity, velocity, ballColour)
-liveBalls = []
+liveBalls = [ball]
 
 # I really tried.
 gameState = GameState(
     pygame.display.set_mode((WIDTH, HEIGHT)),
-    ball,
     paddle,
     liveBalls,
     scoreBoard,
@@ -48,30 +47,11 @@ initialise(
     BORDER
 )
 
-# Game Loop Flags
-gameOn = True
-
-while gameOn:
-    e = pygame.event.poll()
-    keys = pygame.key.get_pressed()
-
-    if e.type == pygame.QUIT:
-        gameOn = False
-
-    if e.type == pygame.KEYDOWN and keys[pygame.K_SPACE]:
-        gameState.newBall()
+while gameState.gameOn:
 
     render(gameState)
 
-    if gameState.ball not in gameState.liveBalls:
-        gameState.newBall()
-
-    for gameState.ball in gameState.liveBalls:
-        if gameState.ball.x > gameState.width:
-            gameState.ball.destroy(gameState.liveBalls)
-
-    if len(gameState.liveBalls) == 0:
-        gameState.gameOver()
+    if gameState.gameIsOver:
         renderScoreboard(gameState)
         time.sleep(2)
         pygame.event.wait()
@@ -80,5 +60,3 @@ while gameOn:
     gameState = engine.updateGameState(gameState)
 
 pygame.quit()
-
-
