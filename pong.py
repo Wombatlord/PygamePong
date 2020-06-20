@@ -1,10 +1,9 @@
 import pygame
 import time
-import renderer
-
-import engine
+from src.renderer import renderer
+from src.engine import engine
 from configReader import reader
-from pongEntities import GameState
+from src.game_state.pongEntities import GameState
 
 pygame.init()
 pygame.display.set_caption("PONGO!")

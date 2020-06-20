@@ -2,7 +2,7 @@ import os
 
 import pygame
 
-from pongEntities import Ball, Paddle, GameState, ScoreBoard
+from src.game_state.pongEntities import Ball, Paddle, GameState, ScoreBoard
 
 # Config Parameters
 screen: pygame.Surface

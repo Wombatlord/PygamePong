@@ -4,8 +4,8 @@ import time
 
 import pygame
 
-from pongEntities import GameState, Ball, Paddle
-from vector import Vector
+from src.game_state.pongEntities import GameState, Ball, Paddle
+from src.lib.spaces.vector import Vector
 
 
 def changeColour(ball):

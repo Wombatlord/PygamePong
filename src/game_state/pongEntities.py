@@ -3,7 +3,7 @@ import time
 import random
 import os
 
-from vector import Vector
+from src.lib.spaces.vector import Vector
 
 scoreValue = 0
 
