@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import os
 
 from vector import Vector
 
@@ -62,6 +63,7 @@ class Ball:
     Change colour.
     """
     RADIUS = 10
+    BALLSPRITE = pygame.image.load(os.path.join("assets", "earthball20x20.png"))
 
     def __init__(self, x, y, vx, vy, colour):
         self.x = float(x)
@@ -86,6 +88,7 @@ class Ball:
 
     def changeColour(self):
         self.colour = randomRGB
+
 
 # I tried.
 class GameState:

@@ -1,3 +1,5 @@
+import os
+
 import pygame
 
 from pongEntities import Ball, Paddle, GameState, ScoreBoard
@@ -8,6 +10,9 @@ screenDimensions = (720, 1080)
 backgroundColour: tuple
 borderColour: tuple
 borderWidth = 25
+
+# Sprites
+BGSPRITE = pygame.image.load(os.path.join("assets", "starfield.png"))
 
 
 def initialise(bkgrndCol, brdrCol, screenDims=None, brdrWidth=None):
@@ -26,6 +31,8 @@ def initialise(bkgrndCol, brdrCol, screenDims=None, brdrWidth=None):
 
 
 def renderBall(ball: Ball):
+    # screen.blit(ball.BALLSPRITE, (ball.x, ball.y))
+
     pygame.draw.circle(screen, ball.colour, (int(ball.x), int(ball.y)), Ball.RADIUS)
 
 
@@ -119,12 +126,20 @@ def blitBackground():
     Fills background with configured colour.
     Blits the background to the background Surface.
     """
-    global screen, backgroundColour
+    """
+    global screen, BGSPRITE
     background = pygame.Surface(screen.get_size())
     background = background.convert()
     background.fill(backgroundColour)
     screen.blit(
         background,
+        (0, 0)
+    )
+
+    """
+
+    screen.blit(
+        BGSPRITE,
         (0, 0)
     )
 
@@ -143,4 +158,3 @@ def render(gameState: GameState):
             renderBall(ball)
     renderPaddle(gameState.paddle)
     pygame.display.flip()
-

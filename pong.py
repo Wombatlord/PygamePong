@@ -1,8 +1,9 @@
-import pygame, time
+import pygame
+import time
 
 import engine
 from pongEntities import ScoreBoard, Ball, Paddle, GameState
-from renderer import initialise, render, renderScoreboard
+from renderer import initialise, render, renderScoreboard, blitBackground
 
 pygame.init()
 pygame.display.set_caption("PONGO!")
@@ -50,6 +51,7 @@ initialise(
 # MAIN LOOP
 
 while gameState.gameOn:
+
 
     render(gameState)
 

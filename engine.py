@@ -104,11 +104,13 @@ def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
     newX = ball.x + timeSinceLastUpdate * ball.vx
     newY = ball.y + timeSinceLastUpdate * ball.vy
 
-    paddleCollide = ball.getHitBox().colliderect(paddle.getHitBox())
-    if paddleCollide:
+    paddleCollision = ball.getHitBox().colliderect(paddle.getHitBox())
+
+    if paddleCollision:
         paddleBounce(ball, paddle)
 
     hitBackWall = newX < border + ball.RADIUS
+
     if hitBackWall:
         scrValue += 1
         wallBounce(ball)
