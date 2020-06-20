@@ -6,7 +6,6 @@ import os
 from vector import Vector
 
 scoreValue = 0
-randomRGB = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),)
 
 
 def current_time():
@@ -85,10 +84,6 @@ class Ball:
     def setVelocity(self, vector: Vector):
         self.vx = vector.x
         self.vy = vector.y
-
-    def changeColour(self):
-        self.colour = randomRGB
-
 
 # I tried.
 class GameState:

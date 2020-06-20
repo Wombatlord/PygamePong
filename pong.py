@@ -17,7 +17,7 @@ BORDER: int = 20
 # Game Object Variables
 borderColour: pygame.Color = pygame.Color("red")
 backgroundColour: tuple = (0, 175, 0)
-ballColour: pygame.Color = pygame.Color("black")
+ballColour: pygame.Color = pygame.Color("green")
 paddleColour: pygame.Color = pygame.Color("blue")
 
 velocity: int = 300

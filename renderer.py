@@ -31,9 +31,9 @@ def initialise(bkgrndCol, brdrCol, screenDims=None, brdrWidth=None):
 
 
 def renderBall(ball: Ball):
-    screen.blit(ball.BALLSPRITE, (ball.x, ball.y))
+    # screen.blit(ball.BALLSPRITE, (ball.x, ball.y))
 
-    # pygame.draw.circle(screen, ball.colour, (int(ball.x), int(ball.y)), Ball.RADIUS)
+    pygame.draw.circle(screen, ball.colour, (int(ball.x), int(ball.y)), Ball.RADIUS)
 
 
 def renderPaddle(paddle: Paddle):

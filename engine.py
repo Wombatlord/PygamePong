@@ -8,6 +8,19 @@ from pongEntities import GameState, Ball, Paddle
 from vector import Vector
 
 
+def changeColour(ball):
+    randomRGB = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    ball.colour = randomRGB
+
+
+def increaseX(ball):
+    ball.vx += random.randint(50, 100)
+
+
+def increaseY(ball):
+    ball.vy += random.randint(50, 100)
+
+
 def current_time():
     """
     Returns the current time.
@@ -82,7 +95,7 @@ def wallBounce(ball: Ball):
     velocity = ball.getVelocity()
     invertedX = Vector.invertX(velocity)
     ball.setVelocity(invertedX)
-    ball.vx += random.randint(50, 100)
+    increaseX(ball)
 
 
 def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
