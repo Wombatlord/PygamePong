@@ -40,7 +40,7 @@ def renderPaddle(paddle: Paddle):
     pygame.draw.rect(
         screen,
         paddle.colour,
-        pygame.Rect((paddle.x, paddle.y), (Paddle.WIDTH, Paddle.HEIGHT))
+        pygame.Rect((paddle.x, paddle.y), (paddle.width, paddle.height))
     )
 
 
@@ -126,7 +126,7 @@ def blitBackground():
     Fills background with configured colour.
     Blits the background to the background Surface.
     """
-    """
+
     global screen, BGSPRITE
     background = pygame.Surface(screen.get_size())
     background = background.convert()
@@ -136,12 +136,12 @@ def blitBackground():
         (0, 0)
     )
 
-    """
-    screen.fill((0, 0, 0))
-    screen.blit(
-        BGSPRITE,
-        (0, 0)
-    )
+
+    # screen.fill((0, 0, 0))
+    # screen.blit(
+    #     BGSPRITE,
+    #     (0, 0)
+    # )
 
 
 def render(gameState: GameState):

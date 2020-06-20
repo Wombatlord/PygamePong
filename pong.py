@@ -2,6 +2,7 @@ import pygame
 import time
 
 import engine
+from configReader import reader
 from pongEntities import ScoreBoard, Ball, Paddle, GameState
 from renderer import initialise, render, renderScoreboard, blitBackground
 
@@ -9,23 +10,38 @@ pygame.init()
 pygame.display.set_caption("PONGO!")
 pygame.mouse.set_visible(0)
 
+configPaths = [
+    'config/config.yml',
+    'config/config.local.yml',
+]
+
+config = reader.get(configPaths)
+
 # Screen Variables
-HEIGHT: int = 720
-WIDTH: int = 1080
-BORDER: int = 20
+HEIGHT: int = config["display"]["resolution"]["height"]
+WIDTH: int = config["display"]["resolution"]["width"]
+BORDER: int = config["gameplay"]["border"]
 
 # Game Object Variables
-borderColour: pygame.Color = pygame.Color("red")
-backgroundColour: tuple = (0, 175, 0)
-ballColour: pygame.Color = pygame.Color("green")
-paddleColour: pygame.Color = pygame.Color("blue")
+borderColour: pygame.Color = pygame.Color(
+    config["display"]["colours"]["border"]
+)
+backgroundColour: tuple = config["display"]["colours"]["background"]
+ballColour: pygame.Color = pygame.Color(
+    config["display"]["colours"]["ball"]
+)
+paddleColour: pygame.Color = pygame.Color(
+    config["display"]["colours"]["paddle"]
+)
 
-velocity: int = 300
+velocity: list = config["gameplay"]["balls"][0]["velocity"]
 
 # Instantiate Game Objects
 scoreBoard: ScoreBoard = ScoreBoard()
 paddle: Paddle = Paddle(WIDTH - BORDER * 3 - Paddle.WIDTH, HEIGHT * 0.5 - Paddle.HEIGHT * 0.5, paddleColour)
-ball: Ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT * 0.5, - velocity, velocity, ballColour)
+paddle.height = config["gameplay"]["paddle"]["height"]
+paddle.width = config["gameplay"]["paddle"]["width"]
+ball: Ball = Ball(WIDTH - Ball.RADIUS - 250, HEIGHT * 0.5, velocity[0], velocity[1], ballColour)
 liveBalls: list = [ball]
 
 # Instantiate GameState and pass screen config parameters.

@@ -44,13 +44,15 @@ class Paddle:
     def __init__(self, x, y, colour):
         self.x = x
         self.y = y
+        self.height = Paddle.HEIGHT
+        self.width = Paddle.WIDTH
         self.colour = colour
 
     def getHitBox(self):
         """
         Returns a hit-box for collision detection which corresponds to paddle location and size.
         """
-        return pygame.Rect((self.x, self.y), (Paddle.WIDTH, Paddle.HEIGHT))
+        return pygame.Rect((self.x, self.y), (self.width, self.height))
 
 
 class Ball:

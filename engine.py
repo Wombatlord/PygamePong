@@ -76,11 +76,11 @@ def paddleBounce(ball: Ball, paddle: Paddle):
     Calculates a return angle for a ball colliding with the paddle.
     Rebound angle is determined by where the ball strikes the paddle.
     """
-    paddleCOM = paddle.y + int(paddle.HEIGHT * 0.5)
+    paddleCOM = paddle.y + int(paddle.height * 0.5)
     speed = ball.getVelocity().getMagnitude()
     newSpeed = int(speed) + random.randint(-25, 50)
     newSpeed = max(newSpeed, 100)
-    offset = -(paddleCOM - ball.y) * 2 / paddle.HEIGHT
+    offset = -(paddleCOM - ball.y) * 2 / paddle.height
     reboundAngle = offset * math.pi / 3
 
     newVelocity = Vector.fromPolarCoOrds(-newSpeed, -reboundAngle)
@@ -150,8 +150,8 @@ def updatePaddle(paddle: Paddle, borderSize, height):
     Updates the paddle position and defines the boundaries of the play space.
     Positional tracking is used to prevent paddle leaving the screen, not hitbox collisions.
     """
-    upperBound = paddle.HEIGHT * 0.5 + borderSize
-    lowerBound = height - paddle.HEIGHT * 0.5 - borderSize
+    upperBound = paddle.height * 0.5 + borderSize
+    lowerBound = height - paddle.height * 0.5 - borderSize
     outOfBoundsAbove = pygame.mouse.get_pos()[1] < upperBound
     outOfBoundsBelow = pygame.mouse.get_pos()[1] > lowerBound
 
@@ -159,19 +159,19 @@ def updatePaddle(paddle: Paddle, borderSize, height):
         """
         Controls the paddle Y position with the mouse.
         """
-        paddle.y = pygame.mouse.get_pos()[1] - Paddle.HEIGHT * 0.5
+        paddle.y = pygame.mouse.get_pos()[1] - paddle.height * 0.5
 
     elif outOfBoundsAbove:
         """
         Prevent the paddle from moving beyond an upper limit.
         """
-        paddle.y = upperBound - Paddle.HEIGHT * 0.5
+        paddle.y = upperBound - paddle.height * 0.5
 
     elif outOfBoundsBelow:
         """
         Prevent the paddle from moving beyond a lower limit.
         """
-        paddle.y = lowerBound - Paddle.HEIGHT * 0.5
+        paddle.y = lowerBound - paddle.height * 0.5
 
     else:
         raise ValueError('ya fucked it')

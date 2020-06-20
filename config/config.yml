@@ -1,0 +1,24 @@
+# Display related settings
+display:
+  resolution:
+    width: 1080
+    height: 720
+  colours:
+    border: red
+    background: [0, 175, 0]
+    ball: green
+    paddle: blue
+    
+
+# Gameplay related settings
+gameplay:
+  border: 20
+  paddle:
+    width: 10
+    height: 150
+  balls:
+    - position:
+      velocity: [-300, 300]
+
+
+
