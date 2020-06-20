@@ -92,25 +92,39 @@ class GameState:
 
     def __init__(
             self,
-            screen,
-            paddle: Paddle,
-            liveBalls,
-            scoreBoard: ScoreBoard,
-            width,
-            height,
-            border,
-            borderColour,
-            backgroundColour,
+            config: dict,
     ):
-        self.screen = screen
+        # Screen Variables
+        height: int = config["display"]["resolution"]["height"]
+        width: int = config["display"]["resolution"]["width"]
+        border: int = config["gameplay"]["border"]
+
+        # Game Object Variables
+        ballColour: pygame.Color = pygame.Color(
+            config["display"]["colours"]["ball"]
+        )
+        paddleColour: pygame.Color = pygame.Color(
+            config["display"]["colours"]["paddle"]
+        )
+
+        velocity: list = config["gameplay"]["balls"][0]["velocity"]
+
+        # Instantiate Game Objects
+        paddleHeight = config["gameplay"]["paddle"]["height"]
+        paddleWidth = config["gameplay"]["paddle"]["width"]
+        scoreBoard: ScoreBoard = ScoreBoard()
+        paddle: Paddle = Paddle(width - border * 3 - paddleWidth, height * 0.5 - paddleHeight * 0.5, paddleColour)
+        paddle.height = paddleHeight
+        paddle.width = paddleWidth
+        ball: Ball = Ball(width - Ball.RADIUS - 250, height * 0.5, velocity[0], velocity[1], ballColour)
+        liveBalls: list = [ball]
+
         self.paddle = paddle
         self.liveBalls = liveBalls
         self.scoreBoard = scoreBoard
         self.width = width
         self.height = height
         self.border = border
-        self.borderColour = borderColour
-        self.backgroundColour = backgroundColour
         self.scoreValue = 0
         self.gameIsOver = False
         self.gameOn = True

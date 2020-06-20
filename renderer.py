@@ -15,18 +15,19 @@ borderWidth = 25
 BGSPRITE = pygame.image.load(os.path.join("assets", "starfield.png"))
 
 
-def initialise(bkgrndCol, brdrCol, screenDims=None, brdrWidth=None):
+def initialise(config):
     """
     Creates the main Surface for display according to passed in config parameters.
     Parameters are background colour and border colour as RGB tuples, X & Y dimensions, and border thickness.
     """
     global screen, screenDimensions, backgroundColour, borderColour, borderWidth
-    borderColour = brdrCol
-    backgroundColour = bkgrndCol
-    if screenDims is not None:
-        screenDimensions = screenDims
-    if brdrWidth is not None:
-        borderWidth = brdrWidth
+    borderColour = pygame.Color(config["display"]["colours"]["border"])
+    backgroundColour = config["display"]["colours"]["background"]
+    screenDimensions = (
+        config["display"]["resolution"]["width"],
+        config["display"]["resolution"]["height"]
+    )
+    borderWidth = config["gameplay"]["border"]
     screen = pygame.display.set_mode(screenDimensions)
 
 
