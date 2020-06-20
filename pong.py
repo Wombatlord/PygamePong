@@ -52,7 +52,6 @@ initialise(
 
 while gameState.gameOn:
 
-
     render(gameState)
 
     if gameState.gameIsOver:
