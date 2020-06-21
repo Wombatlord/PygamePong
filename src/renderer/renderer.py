@@ -5,14 +5,14 @@ import pygame
 from src.game_state.pongEntities import Ball, Paddle, GameState, ScoreBoard
 
 # Config Parameters
-screen: pygame.Surface
-screenDimensions = (720, 1080)
-backgroundColour: tuple
-borderColour: tuple
-borderWidth = 25
+# screen: pygame.Surface
+# screenDimensions = (720, 1080)
+# backgroundColour: tuple
+# borderColour: tuple
+# borderWidth = 25
 
-# Sprites
-BGSPRITE = pygame.image.load(os.path.join("assets", "starfield.png"))
+mainDir = os.path.split(os.path.abspath(__file__))[0]
+backgroundSprites = []
 
 
 def initialise(config):
@@ -29,6 +29,20 @@ def initialise(config):
     )
     borderWidth = config["gameplay"]["border"]
     screen = pygame.display.set_mode(screenDimensions)
+
+    # SPRITE INITIALISATION TESTING
+    bgSprite = loadImage(config["display"]["sprites"]["background"])
+    backgroundSprites.append(bgSprite)
+
+
+def loadImage(file):
+    """
+    :param: Name of sprite image to be loaded, including extension.
+    :return: Sprite converted for fast display.
+    """
+    file = os.path.join(mainDir, "assets", file)
+    surface = pygame.image.load(file)
+    return surface.convert()
 
 
 def renderBall(ball: Ball):
@@ -120,7 +134,7 @@ def renderWalls():
     )
 
 
-def blitBackground():
+def blitBackground(sprites: list):
     """
     Creates a background surface equivalent to main screen size.
     Converts surface for quick display.
@@ -128,21 +142,19 @@ def blitBackground():
     Blits the background to the background Surface.
     """
 
-    global screen, BGSPRITE
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-    background.fill(backgroundColour)
-    screen.blit(
-        background,
-        (0, 0)
-    )
-
-
-    # screen.fill((0, 0, 0))
+    # background = pygame.Surface(screen.get_size())
+    # background = background.convert()
+    # background.fill(backgroundColour)
     # screen.blit(
-    #     BGSPRITE,
+    #     background,
     #     (0, 0)
     # )
+
+    screen.fill((0, 0, 0))
+    screen.blit(
+        sprites[0],
+        (0, 0)
+    )
 
 
 def render(gameState: GameState):
@@ -150,7 +162,7 @@ def render(gameState: GameState):
     Combines renderer functions to display GameState.
     Call this function once in the main loop to provide display output.
     """
-    blitBackground()
+    blitBackground(backgroundSprites)
     renderWalls()
     renderScoreboard(gameState)
     renderGameOnScore(gameState.scoreValue)

@@ -53,6 +53,9 @@ def updateGameState(gameState: GameState) -> GameState:
     if e.type == pygame.KEYDOWN and keys[pygame.K_SPACE]:
         gameState.spawnNewBall()
 
+    if keys[pygame.K_RETURN]:
+        gameState.spawnNewBall()
+
     for ball in gameState.liveBalls:
         if ball.x > gameState.width:
             gameState.liveBalls.remove(ball)

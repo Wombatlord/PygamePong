@@ -65,7 +65,6 @@ class Ball(Movable):
     Change colour.
     """
     RADIUS = 10
-    BALLSPRITE = pygame.image.load(os.path.join("assets", "earthball20x20.png"))
 
     def __init__(self, x, y, vx, vy, colour):
         self.x = float(x)

@@ -20,8 +20,16 @@ config = reader.get(configPaths)
 gameState: GameState = GameState(config)
 renderer.initialise(config)
 
+clock = pygame.time.Clock()
+FPS = 120
+frameCount = 0
+
 # MAIN LOOP
 while gameState.gameOn:
+    clock.tick(FPS)
+    frameCount += 1
+    print(frameCount)
+
     renderer.render(gameState)
 
     if gameState.gameIsOver:
