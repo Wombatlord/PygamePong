@@ -5,6 +5,8 @@ import time
 import pygame
 
 from src.game_state.pongEntities import GameState, Ball, Paddle
+from src.lib.physics.dynamics import Movable
+from src.lib.spaces.orientedplane import OrientedPlane
 from src.lib.spaces.vector import Vector
 
 
@@ -87,15 +89,14 @@ def paddleBounce(ball: Ball, paddle: Paddle):
     ball.setVelocity(newVelocity)
 
 
-def wallBounce(ball: Ball):
+def wallBounce(ball: Ball, normal: Vector):
     """
     Inverts the x axis of a ball velocity vector.
     Increments the x value a random amount.
     """
-    velocity = ball.getVelocity()
-    invertedX = Vector.invertX(velocity)
-    ball.setVelocity(invertedX)
-    increaseX(ball)
+    plane = OrientedPlane(normal)
+    velocity = plane.reflect(ball.getVelocity())
+    ball.setVelocity(velocity)
 
 
 def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
@@ -113,36 +114,43 @@ def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
         timeSinceLastUpdate = timeSince(ball.timeOfLastUpdate)
 
     ball.timeOfLastUpdate = now
-
-    newX = ball.x + timeSinceLastUpdate * ball.vx
-    newY = ball.y + timeSinceLastUpdate * ball.vy
+    nextPosition = getNextPosition(ball, timeSinceLastUpdate)
 
     paddleCollision = ball.getHitBox().colliderect(paddle.getHitBox())
 
     if paddleCollision:
         paddleBounce(ball, paddle)
 
-    hitBackWall = newX < border + ball.RADIUS
-
+    hitBackWall = nextPosition.x < border + ball.RADIUS
     if hitBackWall:
         scrValue += 1
-        wallBounce(ball)
-        newX = ball.x + timeSinceLastUpdate * ball.vx
+        wallBounce(ball, Vector(1, 0))
+        increaseX(ball)
 
-    if newY < border + ball.RADIUS:
+    hitTopWall = nextPosition.y < border + ball.RADIUS
+    if hitTopWall:
         scrValue += 1
-        ball.vy = +abs(ball.vy)
-        newY = ball.y + timeSinceLastUpdate * ball.vy
+        wallBounce(ball, Vector(0, 1))
 
-    if newY > height - border - ball.RADIUS:
+    hitBottomWall = nextPosition.y > height - border - ball.RADIUS
+    if hitBottomWall:
         scrValue += 1
-        ball.vy = -abs(ball.vy)
-        newY = ball.y + timeSinceLastUpdate * ball.vy
+        wallBounce(ball, Vector(0, -1))
+        print(ball.getPosition())
 
-    ball.x = newX
-    ball.y = newY
+    move(ball, timeSinceLastUpdate)
 
     return scrValue
+
+
+def move(movable: Movable, timeSinceLastUpdate):
+    newPosition = getNextPosition(movable, timeSinceLastUpdate)
+    movable.setPosition(newPosition)
+
+
+def getNextPosition(movable: Movable, timeSinceLastUpdate):
+    newPosition = movable.getPosition() + movable.getVelocity().scale(timeSinceLastUpdate)
+    return newPosition
 
 
 def updatePaddle(paddle: Paddle, borderSize, height):

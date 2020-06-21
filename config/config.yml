@@ -8,7 +8,7 @@ display:
     background: [0, 175, 0]
     ball: green
     paddle: blue
-    
+
 
 # Gameplay related settings
 gameplay:

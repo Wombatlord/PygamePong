@@ -39,3 +39,18 @@ class Vector:
 
     def invertY(self) -> Vector:
         return Vector(self.x, -self.y)
+
+    def normalise(self):
+        return self.scale((1/self.getMagnitude()))
+
+    def dot(self, vector: Vector):
+        result = self.x * vector.x + self.y * vector.y
+
+        return result
+
+    def __str__(self) -> str:
+        return f'({self.x}, {self.y})'
+
+    def __add__(self, vector):
+        return self.add(vector)
+

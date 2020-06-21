@@ -3,6 +3,7 @@ import time
 import random
 import os
 
+from src.lib.physics.dynamics import Movable
 from src.lib.spaces.vector import Vector
 
 scoreValue = 0
@@ -55,7 +56,7 @@ class Paddle:
         return pygame.Rect((self.x, self.y), (self.width, self.height))
 
 
-class Ball:
+class Ball(Movable):
     """
     liveBalls are responsible for:
     Providing a hit-box for collision detection,
@@ -80,12 +81,20 @@ class Ball:
         """
         return pygame.Rect((int(self.x) - Ball.RADIUS, int(self.y) - Ball.RADIUS), (Ball.RADIUS * 2, Ball.RADIUS * 2))
 
+    def getPosition(self) -> Vector:
+        return Vector(self.x, self.y)
+
+    def setPosition(self, position: Vector) -> None:
+        self.x = position.x
+        self.y = position.y
+
     def getVelocity(self) -> Vector:
         return Vector(self.vx, self.vy)
 
-    def setVelocity(self, vector: Vector):
+    def setVelocity(self, vector: Vector) -> None:
         self.vx = vector.x
         self.vy = vector.y
+
 
 # I tried.
 class GameState:
