@@ -77,10 +77,10 @@ def displayGameOver():
     Blits the surface to the main screen.
     """
     font = pygame.font.SysFont('comicsansms', 36)
-    text = font.render(ScoreBoard.gameOverMessage, 1, (10, 10, 10))
+    text = font.render(ScoreBoard.gameOverMessage, 1, (109, 48, 252))
     textPos = text.get_rect(
         centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] * 0.5,
-        centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] * 0.5 + 25
+        centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] * 0.5 + 35
     )
     screen.blit(text, textPos)
 
@@ -92,10 +92,10 @@ def renderGameOnScore(scoreValue):
     Fills the surface according to RGB values.
     Blits the surface to the main screen.
     """
-    surface = pygame.Surface((300, 100))
-    surface = surface.convert()
-    surface.fill((255, 255, 255))
-    screen.blit(surface, ScoreBoard.POSITION)
+    # surface = pygame.Surface((300, 100))
+    # surface = surface.convert()
+    # surface.fill((255, 255, 255))
+    # screen.blit(surface, ScoreBoard.POSITION)
     """
     Creates the font object for displaying score values.
     Score is integer and must be converted to string for display, colour is provided as RGB.
@@ -103,7 +103,7 @@ def renderGameOnScore(scoreValue):
     Blits the surface to the main screen.
     """
     font = pygame.font.SysFont("comicsansms", 36)
-    score = font.render(str(scoreValue), 1, (10, 10, 10))
+    score = font.render(str(scoreValue), 1, (109, 48, 252))
     textPos = score.get_rect(
         centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] * 0.5,
         centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] * 0.5

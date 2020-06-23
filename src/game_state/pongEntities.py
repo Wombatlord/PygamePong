@@ -27,7 +27,7 @@ class ScoreBoard:
     """
     Variables for ScoreBoard Surface and Game Over Message.
     """
-    SIZE = (300, 100)
+    SIZE = (200, 50)
     POSITION = (50, 50)
     gameOverMessage = 'fucked it'
 
