@@ -11,7 +11,7 @@ from src.game_state.pongEntities import Ball, Paddle, GameState, ScoreBoard
 # borderColour: tuple
 # borderWidth = 25
 
-mainDir = os.path.split(os.path.abspath(__file__))[0]
+mainDir = os.getcwd()
 backgroundSprites = []
 
 
