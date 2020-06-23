@@ -13,7 +13,9 @@ pygame.mouse.set_visible(0)
 configPaths = [
     'config/config.yml',
     'config/config.local.yml',
+    'assets/block_layouts/layout1.yml'
 ]
+
 config = reader.get(configPaths)
 
 # Instantiate GameState and initialise renderer.
