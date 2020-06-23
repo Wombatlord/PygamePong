@@ -64,13 +64,7 @@ def updateGameState(gameState: GameState) -> GameState:
         gameState.setGameOver()
 
     for ball in gameState.liveBalls:
-        gameState.scoreValue = updateBall(
-            ball,
-            gameState.paddle,
-            gameState.height,
-            gameState.border,
-            gameState.scoreValue,
-        )
+        gameState.scoreValue = updateBall(ball, gameState)
     updatePaddle(gameState.paddle, gameState.border, gameState.height)
 
     return gameState
@@ -102,7 +96,7 @@ def wallBounce(ball: Ball, normal: Vector):
     ball.setVelocity(velocity)
 
 
-def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
+def updateBall(ball: Ball, gamestate: GameState):
     """
     Updates x and y position of the ball based on original positions combined with time differential.
     Detects collision with paddle or walls and reverses travel direction.
@@ -110,6 +104,11 @@ def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
     Destroys the ball if it travels off screen right.
     """
     now = current_time()
+    paddle = gamestate.paddle
+    height = gamestate.height
+    border = gamestate.border
+    scrValue = gamestate.scoreValue
+    blocks = gamestate.blocks
 
     if ball.timeOfLastUpdate is None:
         timeSinceLastUpdate = 0.0
@@ -119,8 +118,26 @@ def updateBall(ball: Ball, paddle: Paddle, height, border, scrValue):
     ball.timeOfLastUpdate = now
     nextPosition = getNextPosition(ball, timeSinceLastUpdate)
 
-    paddleCollision = ball.getHitBox().colliderect(paddle.getHitBox())
+    hitboxes =[]
+    for block in blocks:
+        hitboxes.append(block.getHitBox())
+    blockIndex = ball.getHitBox().collidelist(hitboxes)
+    if blockIndex >= 0:
+        block = blocks[blockIndex]
+        positionDelta: Vector = ball.getPosition().diff(block.getCentre())
+        theta = math.acos(positionDelta.normalise().x)
+        verticalDistance = block.getDimensionsVector().getMagnitude() // 2 * math.sin(theta)
+        verticalCollision = abs(verticalDistance) > block.getHeight() // 2
 
+        if verticalCollision:
+            normal = Vector(0, positionDelta.y).normalise()
+        else:
+            normal = Vector(positionDelta.x, 0).normalise()
+
+        wallBounce(ball, normal)
+        gamestate.blocks.remove(block)
+
+    paddleCollision = ball.getHitBox().colliderect(paddle.getHitBox())
     if paddleCollision:
         paddleBounce(ball, paddle)
 
