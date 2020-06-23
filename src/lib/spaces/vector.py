@@ -31,6 +31,9 @@ class Vector:
 
         return newVector
 
+    def diff(self, vector):
+        return self.add(vector.scale(-1))
+
     def invert(self) -> Vector:
         return Vector(-self.x, -self.y)
 
