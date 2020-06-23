@@ -3,6 +3,8 @@ display:
   resolution:
     width: 1080
     height: 720
+  framerate:
+    max: 120
   colours:
     border: red
     background: [0, 175, 0]
