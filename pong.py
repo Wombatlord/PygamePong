@@ -21,8 +21,6 @@ gameState: GameState = GameState(config)
 renderer.initialise(config)
 
 clock = pygame.time.Clock()
-FPS = 120
-frameCount = 0
 
 # MAIN LOOP
 while gameState.gameOn:
