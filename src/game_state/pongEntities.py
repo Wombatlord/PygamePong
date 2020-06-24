@@ -66,13 +66,14 @@ class Ball(Movable):
     """
     RADIUS = 10
 
-    def __init__(self, x, y, vx, vy, colour):
+    def __init__(self, x, y, vx, vy, colour, ballSprite):
         self.x = float(x)
         self.y = float(y)
         self.vx = float(vx)
         self.vy = float(vy)
         self.timeOfLastUpdate = None
         self.colour = colour
+        self.image = ballSprite
 
     def getHitBox(self):
         """
@@ -101,6 +102,7 @@ class GameState:
     def __init__(
             self,
             config: dict,
+            ballSprite
     ):
         # Screen Variables
         height: int = config["display"]["resolution"]["height"]
@@ -124,7 +126,7 @@ class GameState:
         paddle: Paddle = Paddle(width - border * 3 - paddleWidth, height * 0.5 - paddleHeight * 0.5, paddleColour)
         paddle.height = paddleHeight
         paddle.width = paddleWidth
-        ball: Ball = Ball(width - Ball.RADIUS - 250, height * 0.5, velocity[0], velocity[1], ballColour)
+        ball: Ball = Ball(width - Ball.RADIUS - 250, height * 0.5, velocity[0], velocity[1], ballColour, ballSprite)
         liveBalls: list = [ball]
 
         self.paddle = paddle
@@ -136,6 +138,7 @@ class GameState:
         self.scoreValue = 0
         self.gameIsOver = False
         self.gameOn = True
+        self.ballSprite = ballSprite
 
     def spawnNewBall(self):
         """
@@ -153,6 +156,7 @@ class GameState:
                 - initialVelocityX,
                 initialVelocityY,
                 ballColour,
+                self.ballSprite
             )
         )
 

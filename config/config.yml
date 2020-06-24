@@ -10,6 +10,7 @@ display:
     paddle: blue
   sprites:
     background: starfield.png
+    ball: earthball20x20.png
 
 # Gameplay related settings
 gameplay:
