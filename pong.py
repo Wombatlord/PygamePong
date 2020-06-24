@@ -26,9 +26,9 @@ frameCount = 0
 
 # MAIN LOOP
 while gameState.gameOn:
-    clock.tick(FPS)
-    frameCount += 1
-    print(frameCount)
+    # clock.tick(FPS)
+    # frameCount += 1
+    # print(frameCount)
 
     renderer.render(gameState)
 
