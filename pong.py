@@ -13,7 +13,9 @@ pygame.mouse.set_visible(0)
 configPaths = [
     'config/config.yml',
     'config/config.local.yml',
+    'assets/block_layouts/layout1.yml'
 ]
+
 config = reader.get(configPaths)
 
 # Instantiate GameState and initialise renderer.
@@ -21,14 +23,10 @@ renderer.initialise(config)
 gameState: GameState = GameState(config, renderer.ballSprite)
 
 clock = pygame.time.Clock()
-FPS = 120
-frameCount = 0
 
 # MAIN LOOP
 while gameState.gameOn:
-    # clock.tick(FPS)
-    # frameCount += 1
-    # print(frameCount)
+    clock.tick(config["display"]["framerate"]["max"])
 
     renderer.render(gameState)
 

@@ -11,7 +11,7 @@ backgroundColour: tuple
 borderColour: tuple
 borderWidth = 25
 
-mainDir = os.path.split(os.path.abspath(__file__))[0]
+mainDir = os.getcwd()
 backgroundSprites = []
 ballSprite = None
 
@@ -72,6 +72,19 @@ def renderScoreboard(gameState: GameState):
         pygame.display.flip()
 
 
+def renderBlocks(gamestate: GameState):
+    for block in gamestate.blocks:
+        rectangle = pygame.Rect(
+            (block.getX(), block.getY()),
+            (block.getWidth(), block.getHeight())
+        )
+        pygame.draw.rect(
+            screen,
+            pygame.Color("orange"),
+            rectangle
+        )
+
+
 def displayGameOver():
     """
     Creates the font object for game over message display.
@@ -114,7 +127,7 @@ def renderGameOnScore(scoreValue):
     screen.blit(score, textPos)
 
 
-def renderWalls():
+def renderBorder():
     """
     Renders three walls on screen. Top / Bottom / Left.
     Walls are drawn according to screen dimension and border width config parameter.
@@ -166,7 +179,8 @@ def render(gameState: GameState):
     Call this function once in the main loop to provide display output.
     """
     blitBackground(backgroundSprites)
-    renderWalls()
+    renderBorder()
+    renderBlocks(gameState)
     renderScoreboard(gameState)
     renderGameOnScore(gameState.scoreValue)
     for ball in gameState.liveBalls:

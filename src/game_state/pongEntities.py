@@ -3,6 +3,7 @@ import time
 import random
 import os
 
+from src.game_state.wall import wall
 from src.lib.physics.dynamics import Movable
 from src.lib.spaces.vector import Vector
 
@@ -139,6 +140,8 @@ class GameState:
         self.gameIsOver = False
         self.gameOn = True
         self.ballSprite = ballSprite
+        self.blocks = wall.getBlocks(config["levels"][0])
+        self.config = config
 
     def spawnNewBall(self):
         """
@@ -174,6 +177,7 @@ class GameState:
         self.gameIsOver = False
         self.resetScore()
         self.spawnNewBall()
+        self.blocks = wall.getBlocks(self.config["levels"][0])
 
     def resetScore(self):
         self.scoreValue = 0
