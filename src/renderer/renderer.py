@@ -5,14 +5,15 @@ import pygame
 from src.game_state.pongEntities import Ball, Paddle, GameState, ScoreBoard
 
 # Config Parameters
-# screen: pygame.Surface
-# screenDimensions = (720, 1080)
-# backgroundColour: tuple
-# borderColour: tuple
-# borderWidth = 25
+screen: pygame.Surface
+screenDimensions = (720, 1080)
+backgroundColour: tuple
+borderColour: tuple
+borderWidth = 25
 
 mainDir = os.getcwd()
 backgroundSprites = []
+ballSprite = None
 
 
 def initialise(config):
@@ -20,7 +21,7 @@ def initialise(config):
     Creates the main Surface for display according to passed in config parameters.
     Parameters are background colour and border colour as RGB tuples, X & Y dimensions, and border thickness.
     """
-    global screen, screenDimensions, backgroundColour, borderColour, borderWidth
+    global screen, screenDimensions, backgroundColour, borderColour, borderWidth, ballSprite
     borderColour = pygame.Color(config["display"]["colours"]["border"])
     backgroundColour = config["display"]["colours"]["background"]
     screenDimensions = (
@@ -33,6 +34,8 @@ def initialise(config):
     # SPRITE INITIALISATION TESTING
     bgSprite = loadImage(config["display"]["sprites"]["background"])
     backgroundSprites.append(bgSprite)
+    ballSprite = loadImage(config["display"]["sprites"]["ball"])
+    ballSprite.set_colorkey(0)
 
 
 def loadImage(file):
@@ -46,9 +49,9 @@ def loadImage(file):
 
 
 def renderBall(ball: Ball):
-    # screen.blit(ball.BALLSPRITE, (ball.x, ball.y))
+    screen.blit(ball.image, (ball.x, ball.y))
 
-    pygame.draw.circle(screen, ball.colour, (int(ball.x), int(ball.y)), Ball.RADIUS)
+    # pygame.draw.circle(screen, ball.colour, (int(ball.x), int(ball.y)), Ball.RADIUS)
 
 
 def renderPaddle(paddle: Paddle):
@@ -90,10 +93,10 @@ def displayGameOver():
     Blits the surface to the main screen.
     """
     font = pygame.font.SysFont('comicsansms', 36)
-    text = font.render(ScoreBoard.gameOverMessage, 1, (10, 10, 10))
+    text = font.render(ScoreBoard.gameOverMessage, 1, (109, 48, 252))
     textPos = text.get_rect(
         centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] * 0.5,
-        centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] * 0.5 + 25
+        centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] * 0.5 + 35
     )
     screen.blit(text, textPos)
 
@@ -105,10 +108,10 @@ def renderGameOnScore(scoreValue):
     Fills the surface according to RGB values.
     Blits the surface to the main screen.
     """
-    surface = pygame.Surface((300, 100))
-    surface = surface.convert()
-    surface.fill((255, 255, 255))
-    screen.blit(surface, ScoreBoard.POSITION)
+    # surface = pygame.Surface((300, 100))
+    # surface = surface.convert()
+    # surface.fill((255, 255, 255))
+    # screen.blit(surface, ScoreBoard.POSITION)
     """
     Creates the font object for displaying score values.
     Score is integer and must be converted to string for display, colour is provided as RGB.
@@ -116,7 +119,7 @@ def renderGameOnScore(scoreValue):
     Blits the surface to the main screen.
     """
     font = pygame.font.SysFont("comicsansms", 36)
-    score = font.render(str(scoreValue), 1, (10, 10, 10))
+    score = font.render(str(scoreValue), 1, (109, 48, 252))
     textPos = score.get_rect(
         centerx=ScoreBoard.POSITION[0] + ScoreBoard.SIZE[0] * 0.5,
         centery=ScoreBoard.POSITION[1] + ScoreBoard.SIZE[1] * 0.5

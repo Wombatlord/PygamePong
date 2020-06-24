@@ -19,8 +19,8 @@ configPaths = [
 config = reader.get(configPaths)
 
 # Instantiate GameState and initialise renderer.
-gameState: GameState = GameState(config)
 renderer.initialise(config)
+gameState: GameState = GameState(config, renderer.ballSprite)
 
 clock = pygame.time.Clock()
 
